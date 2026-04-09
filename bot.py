@@ -20,13 +20,11 @@ if not TOKEN:
 API_URL = f"https://api.telegram.org/bot{TOKEN}"
 STATE_FILE = "state.json"
 
-# 🔧 ВРЕМЕННО: раскомментируйте для однократного сброса offset (чтобы поймать все сообщения)
-RESET_OFFSET = True   # ← после первого успешного ответа бота поставьте False
+# Сброс offset больше не требуется, бот уже получил все сообщения
+RESET_OFFSET = False
 
-# Регулярка для ссылок
 URL_PATTERN = re.compile(r'(https?://\S+|www\.\S+|tg://\S+)', re.IGNORECASE)
 
-# Эмодзи
 EMOJI_ON = "🟢"
 EMOJI_OFF = "🔴"
 EMOJI_SETTINGS = "⚙️"
@@ -151,7 +149,6 @@ def process_update(upd: Dict, state: Dict):
         users = state.setdefault("users", {})
         user = users.setdefault(user_id, {"active": False, "text": "", "awaiting_text": False})
 
-        # Команды /start, /status и т.д.
         if text == "/start":
             handle_start(chat_id, user_id, state)
         elif text in ("/status", f"{EMOJI_INFO} Статус"):
@@ -230,7 +227,6 @@ def main():
     print(f"🚀 Bot started at {datetime.now().isoformat()}")
     state = load_state()
 
-    # Сброс offset для захвата всех пропущенных сообщений (однократно)
     if RESET_OFFSET:
         print("⚠️ Сброс offset = 0 (однократно)")
         state["offset"] = 0
